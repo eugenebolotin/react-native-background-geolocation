@@ -150,7 +150,8 @@ enum {
 
     DDLogDebug(@"%@", config);
 
-    locationManager.pausesLocationUpdatesAutomatically = YES;
+    locationManager.pausesLocationUpdatesAutomatically = NO;
+    locationManager.allowsBackgroundLocationUpdates = YES;
     locationManager.activityType = [_config decodeActivityType];
     locationManager.distanceFilter = _config.distanceFilter; // meters
     locationManager.desiredAccuracy = [_config decodeDesiredAccuracy];
@@ -398,9 +399,10 @@ enum {
     // Create a background-task and delegate to Javascript for syncing location
     bgTask = [self createBackgroundTask];
     // retrieve first queued location
-    Location *location = [locationQueue firstObject];
-    [locationQueue removeObject:location];
+    Location *location = [locationQueue lastObject];
+    [locationQueue removeAllObjects];
 
+    NSLog(@"Queue count: %d", [locationQueue count]);
     [self sync:location];
 
     if (![location.type isEqual: @"current"]) {
